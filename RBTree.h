@@ -11,6 +11,8 @@ using namespace std;
 
 struct Node {
     int data;
+    int x;
+    int y;
     Node* parent;
     Node* left;
     Node* right;
@@ -23,6 +25,9 @@ class RBTree {
 private:
     NodePtr root;
     NodePtr TNULL;
+    int currX;
+    int currY;
+    int currDist;
 
     void initializeNULLNode(NodePtr node, NodePtr parent) {
         node->data = 0;
@@ -38,6 +43,34 @@ private:
             cout << node->data << " ";
             preOrderHelper(node->left);
             preOrderHelper(node->right);
+        }
+    }
+
+    void queryinOrderHelper(NodePtr node, int &res, int &farthest, int &farthestDist) {
+        if (node != TNULL) {
+            queryinOrderHelper(node->left, res, farthest, farthestDist);
+            
+            int distance = pow(currDist, 2) - (pow(currX - node->x, 2) + pow(currY - node->y, 2));
+            if (distance > 0) {
+                cout << node->data << "INSIDE" << endl;
+                res++;
+                if (distance < farthestDist) {
+                    farthestDist = distance;
+                    farthest = node->data;
+                }
+            }
+            else if(distance < 0)
+                cout << node->data << "OUTSIDE" << endl;
+            else {
+                cout << node->data << "ON THE LINE" << endl;
+                res++;
+                if (distance < farthestDist) {
+                    farthestDist = distance;
+                    farthest = node->data;
+                }
+            }
+
+            queryinOrderHelper(node->right, res, farthest, farthestDist);
         }
     }
 
@@ -289,6 +322,14 @@ public:
         inOrderHelper(this->root);
     }
 
+    int queryinorder(int centerX, int centerY, int dist, int farthest) {
+        int res = 0;
+        int farthestP = 9999999;
+        currX = centerX; currY = centerY; currDist = dist;
+
+        queryinOrderHelper(this->root, res, farthest, farthestP);
+        return res;
+    }
     void postorder() {
         postOrderHelper(this->root);
     }
@@ -379,10 +420,12 @@ public:
     }
 
     // Inserting a node
-    void insert(int key) {
+    void insert(int key, int pointX, int pointY) {
         NodePtr node = new Node;
         node->parent = nullptr;
         node->data = key;
+        node->x = pointX;
+        node->y = pointY;
         node->left = TNULL;
         node->right = TNULL;
         node->color = 1;

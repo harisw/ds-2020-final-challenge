@@ -14,19 +14,8 @@ using namespace std;
 using namespace std::chrono;
 
 #define MAX_SIZE 1000002
-struct Point {
-	int x;
-	int y;
-	Point(int _x, int _y) {
-		x = _x;
-		y = _y;
-	}
-};
 
-Point* filler = new Point(NULL, NULL);
-vector<Point*> points(MAX_SIZE, filler);
-int filled[MAX_SIZE];
-
+RBTree tree;
 const vector<string> explode(string& s, const char& c)
 {
 	string buff{ "" };
@@ -47,15 +36,14 @@ void insertPoint(vector<string>& inp)
 	int x = stoi(inp[2]);
 	int y = stoi(inp[3]);
 	int i = stoi(inp[1]);
-	//points.insert(points.begin() + i, &Point(x, y));
-	points[i] = new Point(x, y);
+	tree.insert(i, x, y);
 	return;
 }
 
 void deletePoint(vector<string>& inp)
 {
 	int i = stoi(inp[1]);
-	points[i] = NULL;
+	tree.deleteNode(i);
 	return;
 }
 
@@ -64,8 +52,13 @@ void queryPoint(vector<string>& inp)
 	int cent_x = stoi(inp[1]);
 	int cent_y = stoi(inp[2]);
 	int rad = stoi(inp[3]);
-
-	//int distance = pow(rad, 2) - pow(cent_x;
+	int farthest = 0;
+	int result = tree.queryinorder(cent_x, cent_y, rad, farthest);
+	if (!result)
+		cout << "0" << endl;
+	else
+		cout << result << " " << farthest << endl;
+	return;
 }
 
 void testBTree()
@@ -95,38 +88,38 @@ void testRBTree()
 	{
 		cur_line = explode(line, delim);
 		if (cur_line[0][0] == '+')
-			tree.insert(stoi(cur_line[1]));
+			tree.insert(stoi(cur_line[1]), stoi(cur_line[2]), stoi(cur_line[3]));
 	}
 	in.close();
 }
 int main()
 {
 
-	testRBTree();
- //   string line;
- //   ifstream in("pin.txt");
- //   ofstream outfile;
- //   outfile.open("pout.txt");
- //   vector<string> cur_line;
-	//const char delim = ' ';
+	//testRBTree();
+    string line;
+    ifstream in("pin.txt");
+    ofstream outfile;
+    outfile.open("pout.txt");
+    vector<string> cur_line;
+	const char delim = ' ';
 
- //   while (getline(in, line)) {
- //       cur_line = explode(line, delim);
-	//	switch (cur_line[0][0])
-	//	{
-	//	case '+':
-	//		insertPoint(cur_line);
-	//		break;
-	//	case '-':
-	//		deletePoint(cur_line);
-	//		break;
-	//	case '?':
-	//		queryPoint(cur_line);
-	//		break;
-	//	default:
-	//		return 1;
-	//	}
- //   }
- //   outfile.close();
+    while (getline(in, line)) {
+        cur_line = explode(line, delim);
+		switch (cur_line[0][0])
+		{
+		case '+':
+			insertPoint(cur_line);
+			break;
+		case '-':
+			deletePoint(cur_line);
+			break;
+		case '?':
+			queryPoint(cur_line);
+			break;
+		default:
+			return 1;
+		}
+    }
+    outfile.close();
 	return 1;
 }
