@@ -7,6 +7,9 @@
 #include <vector>
 #include <chrono>
 #include <array>
+#include "BTree.h"
+#include "RBTree.h"
+
 using namespace std;
 using namespace std::chrono;
 
@@ -62,47 +65,68 @@ void queryPoint(vector<string>& inp)
 	int cent_y = stoi(inp[2]);
 	int rad = stoi(inp[3]);
 
-	int distance = pow(rad, 2) - pow(cent_x;
+	//int distance = pow(rad, 2) - pow(cent_x;
+}
+
+void testBTree()
+{
+	string line;
+	ifstream in("pin.txt"); 
+	vector<string> cur_line;
+	const char delim = ' ';
+	BTree tree(4);
+ 	while (getline(in, line))
+	{
+		cur_line = explode(line, delim);
+		if(cur_line[0][0] == '+')
+			tree.insert(stoi(cur_line[1]));
+	}
+	in.close();
+}
+
+void testRBTree()
+{
+	string line;
+	ifstream in("pin.txt");
+	vector<string> cur_line;
+	const char delim = ' ';
+	RBTree tree;
+	while (getline(in, line))
+	{
+		cur_line = explode(line, delim);
+		if (cur_line[0][0] == '+')
+			tree.insert(stoi(cur_line[1]));
+	}
+	in.close();
 }
 int main()
 {
-    string line;
-    ifstream in("pin.txt");
-    ofstream outfile;
-    outfile.open("pout.txt");
-    vector<string> cur_line;
-	const char delim = ' ';
 
-    while (getline(in, line)) {
-        cur_line = explode(line, delim);
-		switch (cur_line[0][0])
-		{
-		case '+':
-			insertPoint(cur_line);
-			break;
-		case '-':
-			deletePoint(cur_line);
-			break;
-		case '?':
-			queryPoint(cur_line);
-			break;
-		default:
-			return 1;
-		}
-    }
-    outfile.close();
+	testRBTree();
+ //   string line;
+ //   ifstream in("pin.txt");
+ //   ofstream outfile;
+ //   outfile.open("pout.txt");
+ //   vector<string> cur_line;
+	//const char delim = ' ';
+
+ //   while (getline(in, line)) {
+ //       cur_line = explode(line, delim);
+	//	switch (cur_line[0][0])
+	//	{
+	//	case '+':
+	//		insertPoint(cur_line);
+	//		break;
+	//	case '-':
+	//		deletePoint(cur_line);
+	//		break;
+	//	case '?':
+	//		queryPoint(cur_line);
+	//		break;
+	//	default:
+	//		return 1;
+	//	}
+ //   }
+ //   outfile.close();
 	return 1;
 }
-
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
