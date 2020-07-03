@@ -11,8 +11,8 @@ using namespace std;
 
 struct Node {
     int data;
-    int x;
-    int y;
+    long long int x;
+    long long int y;
     Node* parent;
     Node* left;
     Node* right;
@@ -25,9 +25,9 @@ class RBTree {
 private:
     NodePtr root;
     NodePtr TNULL;
-    int currX;
-    int currY;
-    int currDist;
+    long long int currX;
+    long long int currY;
+    long long int currDist;
 
     void initializeNULLNode(NodePtr node, NodePtr parent) {
         node->data = 0;
@@ -46,23 +46,25 @@ private:
         }
     }
 
-    void queryinOrderHelper(NodePtr node, int &res, int &farthest, int &farthestDist) {
+    void queryinOrderHelper(NodePtr node, int &res, int &farthest, long int &farthestDist) {
         if (node != TNULL) {
             queryinOrderHelper(node->left, res, farthest, farthestDist);
-            
-            int distance = pow(currDist, 2) - (pow(currX - node->x, 2) + pow(currY - node->y, 2));
+            long double xRes = pow(currX - node->x, 2);
+            long double yRes = pow(currY - node->y, 2);
+            long double powRad = pow(currDist, 2);
+            long double distance = powRad - (xRes + yRes);
             if (distance > 0) {
-                cout << node->data << "INSIDE" << endl;
+                //cout << node->data << "INSIDE" << endl;
                 res++;
                 if (distance < farthestDist) {
                     farthestDist = distance;
                     farthest = node->data;
                 }
             }
-            else if(distance < 0)
-                cout << node->data << "OUTSIDE" << endl;
-            else {
-                cout << node->data << "ON THE LINE" << endl;
+            //else if(distance < 0)
+                //cout << node->data << "OUTSIDE" << endl;
+            else if(distance == 0){
+                //cout << node->data << "ON THE LINE" << endl;
                 res++;
                 if (distance < farthestDist) {
                     farthestDist = distance;
@@ -200,7 +202,7 @@ private:
         }
 
         if (z == TNULL) {
-            cout << "Key not found in the tree" << endl;
+            //cout << "Key not found in the tree" << endl;
             return;
         }
 
@@ -324,7 +326,7 @@ public:
 
     int queryinorder(int centerX, int centerY, int dist, int farthest) {
         int res = 0;
-        int farthestP = 9999999;
+        long int farthestP = 9999999;
         currX = centerX; currY = centerY; currDist = dist;
 
         queryinOrderHelper(this->root, res, farthest, farthestP);

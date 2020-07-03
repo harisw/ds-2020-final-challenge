@@ -16,6 +16,7 @@ using namespace std::chrono;
 #define MAX_SIZE 1000002
 
 RBTree tree;
+ofstream outfile;
 const vector<string> explode(string& s, const char& c)
 {
 	string buff{ "" };
@@ -33,8 +34,8 @@ const vector<string> explode(string& s, const char& c)
 
 void insertPoint(vector<string>& inp)
 {
-	int x = stoi(inp[2]);
-	int y = stoi(inp[3]);
+	long int x = stoi(inp[2]);
+	long int y = stoi(inp[3]);
 	int i = stoi(inp[1]);
 	tree.insert(i, x, y);
 	return;
@@ -49,15 +50,15 @@ void deletePoint(vector<string>& inp)
 
 void queryPoint(vector<string>& inp)
 {
-	int cent_x = stoi(inp[1]);
-	int cent_y = stoi(inp[2]);
-	int rad = stoi(inp[3]);
-	int farthest = 0;
+	long int cent_x = stoi(inp[1]);
+	long int cent_y = stoi(inp[2]);
+	long int rad = stoi(inp[3]);
+	long int farthest = 0;
 	int result = tree.queryinorder(cent_x, cent_y, rad, farthest);
 	if (!result)
-		cout << "0" << endl;
+		outfile << "0" << endl;
 	else
-		cout << result << " " << farthest << endl;
+		outfile << result << " " << farthest << endl;
 	return;
 }
 
@@ -97,12 +98,11 @@ int main()
 
 	//testRBTree();
     string line;
-    ifstream in("pin.txt");
-    ofstream outfile;
+    ifstream in("pin_1.txt");
     outfile.open("pout.txt");
     vector<string> cur_line;
 	const char delim = ' ';
-
+	int j = 0;
     while (getline(in, line)) {
         cur_line = explode(line, delim);
 		switch (cur_line[0][0])
@@ -119,6 +119,10 @@ int main()
 		default:
 			return 1;
 		}
+		j++;
+		//cout << j << endl;
+		if (j == 10000)
+			break;
     }
     outfile.close();
 	return 1;
