@@ -53,7 +53,7 @@ void queryPoint(vector<string>& inp)
 	long int cent_x = stoi(inp[1]);
 	long int cent_y = stoi(inp[2]);
 	long int rad = stoi(inp[3]);
-	long int farthest = 0;
+	int farthest = 0;
 	int result = tree.queryinorder(cent_x, cent_y, rad, farthest);
 	if (!result)
 		outfile << "0" << endl;
@@ -119,10 +119,7 @@ int main()
 		default:
 			return 1;
 		}
-		j++;
-		//cout << j << endl;
-		if (j == 10000)
-			break;
+
     }
     outfile.close();
 	return 1;

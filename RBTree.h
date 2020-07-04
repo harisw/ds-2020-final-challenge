@@ -46,7 +46,7 @@ private:
         }
     }
 
-    void queryinOrderHelper(NodePtr node, int &res, int &farthest, long int &farthestDist) {
+    void queryinOrderHelper(NodePtr node, int &res, int &farthest, long double &farthestDist) {
         if (node != TNULL) {
             queryinOrderHelper(node->left, res, farthest, farthestDist);
             long double xRes = pow(currX - node->x, 2);
@@ -324,9 +324,9 @@ public:
         inOrderHelper(this->root);
     }
 
-    int queryinorder(int centerX, int centerY, int dist, int farthest) {
+    int queryinorder(int centerX, int centerY, int dist, int &farthest) {
         int res = 0;
-        long int farthestP = 9999999;
+        long double farthestP = 9999999999999;
         currX = centerX; currY = centerY; currDist = dist;
 
         queryinOrderHelper(this->root, res, farthest, farthestP);
