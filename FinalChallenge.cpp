@@ -7,7 +7,6 @@
 #include <vector>
 #include <chrono>
 #include <array>
-#include "BTree.h"
 #include "RBTree.h"
 
 using namespace std;
@@ -17,6 +16,10 @@ using namespace std::chrono;
 
 RBTree tree;
 ofstream outfile;
+ofstream outInsertFile;
+ofstream outDeleteFile;
+ofstream outQueryFile;
+
 const vector<string> explode(string& s, const char& c)
 {
 	string buff{ "" };
@@ -62,22 +65,6 @@ void queryPoint(vector<string>& inp)
 	return;
 }
 
-void testBTree()
-{
-	string line;
-	ifstream in("pin.txt"); 
-	vector<string> cur_line;
-	const char delim = ' ';
-	BTree tree(4);
- 	while (getline(in, line))
-	{
-		cur_line = explode(line, delim);
-		if(cur_line[0][0] == '+')
-			tree.insert(stoi(cur_line[1]));
-	}
-	in.close();
-}
-
 void testRBTree()
 {
 	string line;
@@ -93,34 +80,81 @@ void testRBTree()
 	}
 	in.close();
 }
+void preparation()
+{
+	outfile.open("pout.txt");
+	outInsertFile.open("time_ins.txt");
+	outDeleteFile.open("time_del.txt");
+	outQueryFile.open("time_que.txt");
+}
+void closing()
+{
+	outfile.close();
+	outInsertFile.close();
+	outDeleteFile.close();
+	outQueryFile.close();
+}
+
+
 int main()
 {
-
-	//testRBTree();
     string line;
-    ifstream in("pin_1.txt");
-    outfile.open("pout.txt");
+	ifstream in("pin_2.txt");
     vector<string> cur_line;
 	const char delim = ' ';
-	int j = 0;
+	preparation();
+
+	//TIME MEASUREMENT VARIABLES
+	int insDur = 0, delDur = 0, queDur = 0;
+	int insCount = 1, delCount = 1, queCount = 1;
+	auto start = high_resolution_clock::now();
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start).count();
     while (getline(in, line)) {
         cur_line = explode(line, delim);
 		switch (cur_line[0][0])
 		{
 		case '+':
+			start = high_resolution_clock::now();
 			insertPoint(cur_line);
+			stop = high_resolution_clock::now();
+			duration = duration_cast<microseconds>(stop - start).count();
+			insDur += duration;
+			if (insCount % 5000 == 0) {
+				outInsertFile << insCount << ". TIME AVG : " << insDur / 5000 << " microseconds" << endl;
+				insDur = 0;
+			}
+			insCount++;
 			break;
 		case '-':
+			start = high_resolution_clock::now();
 			deletePoint(cur_line);
+			stop = high_resolution_clock::now();
+			duration = duration_cast<microseconds>(stop - start).count();
+			delDur += duration;
+			if (delCount % 3000 == 0) {
+				outDeleteFile << delCount << ". TIME AVG : " << delDur / 3000 << " microseconds" << endl;
+				delDur = 0;
+			}
+			delCount++;
 			break;
 		case '?':
+			start = high_resolution_clock::now();
 			queryPoint(cur_line);
+			stop = high_resolution_clock::now();
+			duration = duration_cast<microseconds>(stop - start).count();
+			queDur += duration;
+			if (queCount % 1400 == 0) {
+				outQueryFile << queCount << ". TIME AVG : " << queDur / 1400 << " microseconds" << endl;
+				queDur = 0;
+			}
+			queCount++;
 			break;
 		default:
 			return 1;
 		}
 
     }
-    outfile.close();
+	closing();
 	return 1;
 }
