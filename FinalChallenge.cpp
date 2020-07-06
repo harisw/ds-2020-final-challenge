@@ -7,14 +7,14 @@
 #include <vector>
 #include <chrono>
 #include <array>
-#include "RBTree.h"
+#include "BTree.h"
 
 using namespace std;
 using namespace std::chrono;
 
 #define MAX_SIZE 1000002
 
-RBTree tree;
+BTree tree(3);
 ofstream outfile;
 ofstream outInsertFile;
 ofstream outDeleteFile;
@@ -47,7 +47,7 @@ void insertPoint(vector<string>& inp)
 void deletePoint(vector<string>& inp)
 {
 	int i = stoi(inp[1]);
-	tree.deleteNode(i);
+	tree.deletion(i);
 	return;
 }
 
@@ -57,7 +57,7 @@ void queryPoint(vector<string>& inp)
 	long int cent_y = stoi(inp[2]);
 	long int rad = stoi(inp[3]);
 	int farthest = 0;
-	int result = tree.queryinorder(cent_x, cent_y, rad, farthest);
+	int result = tree.queryTraverse(cent_x, cent_y, rad, farthest);
 	if (!result)
 		outfile << "0" << endl;
 	else
@@ -65,21 +65,6 @@ void queryPoint(vector<string>& inp)
 	return;
 }
 
-void testRBTree()
-{
-	string line;
-	ifstream in("pin.txt");
-	vector<string> cur_line;
-	const char delim = ' ';
-	RBTree tree;
-	while (getline(in, line))
-	{
-		cur_line = explode(line, delim);
-		if (cur_line[0][0] == '+')
-			tree.insert(stoi(cur_line[1]), stoi(cur_line[2]), stoi(cur_line[3]));
-	}
-	in.close();
-}
 void preparation()
 {
 	outfile.open("pout.txt");
@@ -103,7 +88,7 @@ int main()
     vector<string> cur_line;
 	const char delim = ' ';
 	preparation();
-
+	
 	//TIME MEASUREMENT VARIABLES
 	int insDur = 0, delDur = 0, queDur = 0;
 	int insCount = 1, delCount = 1, queCount = 1;
@@ -151,7 +136,7 @@ int main()
 			queCount++;
 			break;
 		default:
-			return 1;
+			break;
 		}
 
     }
