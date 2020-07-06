@@ -14,7 +14,7 @@ using namespace std::chrono;
 
 #define MAX_SIZE 1000002
 
-BTree tree(3);
+BTree tree(4);
 ofstream outfile;
 ofstream outInsertFile;
 ofstream outDeleteFile;
