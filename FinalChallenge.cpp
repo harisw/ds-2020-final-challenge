@@ -7,14 +7,15 @@
 #include <vector>
 #include <chrono>
 #include <array>
-#include "BTree.h"
+#include "RBTree.h"
 
 using namespace std;
 using namespace std::chrono;
 
 #define MAX_SIZE 1000002
 
-BTree tree(4);
+RBTree tree;
+//BTree tree(4);
 ofstream outfile;
 ofstream outInsertFile;
 ofstream outDeleteFile;
@@ -47,19 +48,23 @@ void insertPoint(vector<string>& inp)
 void deletePoint(vector<string>& inp)
 {
 	int i = stoi(inp[1]);
+	//rb tree
+	tree.deleteNode(i);
 	//b tree
-	tree.deletion(i);
+	//tree.deletion(i);
 	return;
 }
 
 void queryPoint(vector<string>& inp)
 {
-	long int cent_x = stoi(inp[1]);
-	long int cent_y = stoi(inp[2]);
-	long int rad = stoi(inp[3]);
+	long double cent_x = stod(inp[1]);
+	long double cent_y = stod(inp[2]);
+	long double rad = stod(inp[3]);
 	int farthest = 0;
+	//rb tree
+	int result = tree.queryinorder(cent_x, cent_y, rad, farthest);
 	//b tree
-	int result = tree.queryTraverse(cent_x, cent_y, rad, farthest);
+	//int result = tree.queryTraverse(cent_x, cent_y, rad, farthest);
 
 
 	if (!result)
@@ -72,9 +77,9 @@ void queryPoint(vector<string>& inp)
 void preparation()
 {
 	outfile.open("pout.txt");
-	outInsertFile.open("time_ins.txt");
-	outDeleteFile.open("time_del.txt");
-	outQueryFile.open("time_que.txt");
+	outInsertFile.open("time_ins_rb.txt");
+	outDeleteFile.open("time_del_rb.txt");
+	outQueryFile.open("time_que_rb.txt");
 }
 void closing()
 {

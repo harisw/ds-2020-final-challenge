@@ -5,14 +5,16 @@
 #include <string>
 #include <fstream>
 #include <vector>
-
+#define LLINT long long int
+#define LD long double
+#define MAXFARTHEST 9999999999999
 using namespace std;
 
 
 struct Node {
     int data;
-    long long int x;
-    long long int y;
+    LLINT x;
+    LLINT y;
     Node* parent;
     Node* left;
     Node* right;
@@ -25,9 +27,9 @@ class RBTree {
 private:
     NodePtr root;
     NodePtr TNULL;
-    long long int currX;
-    long long int currY;
-    long long int currDist;
+    LD currX;
+    LD currY;
+    LD currDist;
 
     void initializeNULLNode(NodePtr node, NodePtr parent) {
         node->data = 0;
@@ -46,25 +48,22 @@ private:
         }
     }
 
-    void queryinOrderHelper(NodePtr node, int& res, int& farthest, long double& farthestDist) {
+    void queryinOrderHelper(NodePtr node, int& res, int& farthest, LD &farthestDist) {
         if (node != TNULL) {
             queryinOrderHelper(node->left, res, farthest, farthestDist);
-            long double xRes = pow(currX - node->x, 2);
-            long double yRes = pow(currY - node->y, 2);
-            long double powRad = pow(currDist, 2);
-            long double distance = powRad - (xRes + yRes);
-            if (distance > 0) {
-                //cout << node->data << "INSIDE" << endl;
+            LD xRes = (currX - node->x) * (currX - node->x);
+            LD yRes = (currY - node->y) * (currY - node->y);
+            LD powRad = currDist * currDist;
+            LD distance = powRad - (xRes + yRes);
+
+            if (distance > 0) {     //IF POINT INSIDE
                 res++;
                 if (distance < farthestDist) {
                     farthestDist = distance;
                     farthest = node->data;
                 }
             }
-            //else if(distance < 0)
-                //cout << node->data << "OUTSIDE" << endl;
-            else if (distance == 0) {
-                //cout << node->data << "ON THE LINE" << endl;
+            else if (distance == 0) {       //IF POINT ON THE LINE
                 res++;
                 if (distance < farthestDist) {
                     farthestDist = distance;
@@ -326,7 +325,7 @@ public:
 
     int queryinorder(int centerX, int centerY, int dist, int& farthest) {
         int res = 0;
-        long double farthestP = 9999999999999;
+        LD farthestP = 9999999999999;
         currX = centerX; currY = centerY; currDist = dist;
 
         queryinOrderHelper(this->root, res, farthest, farthestP);
@@ -482,62 +481,3 @@ public:
         }
     }
 };
-
-
-//int main() {
-//    string line;
-//    RedBlackTree rbtree;
-//
-//    ofstream outfile;
-//    outfile.open("output_redblack.txt");
-//    float totalDur = 0;
-//    int duration = 0;
-//    int worstCase = 0;
-//
-//    int count = 1;
-//    for (int j = 1; j <= 10; j++)     //EVERY STEP CONTAIN 10000 ELEMENT INPUT
-//    {
-//
-//        //INSERT OPERATION
-//        fstream in("input_step-" + to_string(j) + ".txt");
-//        while (getline(in, line))
-//        {
-//            auto start = high_resolution_clock::now();
-//            rbtree.insert(stoi(line));
-//
-//            auto stop = high_resolution_clock::now();
-//            duration = duration_cast<microseconds>(stop - start).count();
-//            totalDur += duration;
-//
-//        }
-//        //WRITE INSERT AVERAGE TIME
-//        outfile << "INSERT -- " << j << " : " << totalDur / 10000 << " microseconds " << " microseconds" << endl;
-//        totalDur = 0;
-//
-//        fstream in_search("search-" + to_string(j) + ".txt");
-//        while (getline(in_search, line))
-//        {
-//            auto start = high_resolution_clock::now();
-//
-//            if (rbtree.searchTree(stoi(line)))
-//                cout << "NUMBER FOUND" << endl;
-//            else
-//                cout << "NOT FOUND" << endl;
-//
-//            auto stop = high_resolution_clock::now();
-//            duration = duration_cast<microseconds>(stop - start).count();
-//            totalDur += duration;
-//
-//            if (duration > worstCase)
-//                worstCase = duration;
-//        }
-//
-//        outfile << "SEARCH -- " << j << " : " << totalDur / 10 << " microseconds " << "worstcase : " << worstCase << " microseconds" << endl
-//            << endl << endl;
-//        totalDur = 0;
-//        worstCase = 0;
-//        in.close();
-//        in_search.close();
-//    }
-//    outfile.close();
-//}

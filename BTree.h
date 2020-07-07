@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 #define LLINT long long int
-#define LLINT long int
 #define MAXFARTHEST 9999999999999
 using namespace std;
 
@@ -40,7 +39,7 @@ public:
     void borrowFromNext(int idx);
     void merge(int idx);
     TreeNode* search(int k);
-    void QueryTraverseHelper(int &res, int& farthest, long double &farthestDist, LLINT &currX, LLINT &currY, LLINT &currDist);
+    void QueryTraverseHelper(int &res, int& farthest, long double &farthestDist, long double &currX, long double &currY, long double &currDist);
     friend class BTree;
 };
 
@@ -49,7 +48,7 @@ class BTree {
     int t;
 
 public:
-    int queryTraverse(LLINT centerX, LLINT centerY, LLINT dist, int& farthest) {
+    int queryTraverse(long double centerX, long double centerY, long double dist, int& farthest) {
         int res = 0;
         long double farthestP = MAXFARTHEST;
 
@@ -84,14 +83,14 @@ TreeNode::TreeNode(int t1, bool leaf1) {
     n = 0;
 }
 
-void TreeNode::QueryTraverseHelper(int &res, int &farthest, long double &farthestDist, LLINT &currX, LLINT &currY, LLINT &currDist) {
+void TreeNode::QueryTraverseHelper(int &res, int &farthest, long double &farthestDist, long double &currX, long double &currY, long double &currDist) {
     int i;
     for (i = 0; i < n; i++) {
         if (leaf == false)
             C[i]->QueryTraverseHelper(res, farthest, farthestDist, currX, currY, currDist);
-        long double xRes = pow(currX - nodes[i]->x, 2);
-        long double yRes = pow(currY - nodes[i]->y, 2);
-        long double powRad = pow(currDist, 2);
+        long double xRes = (currX - nodes[i]->x)* (currX - nodes[i]->x);
+        long double yRes = (currY - nodes[i]->y)* (currY - nodes[i]->y);
+        long double powRad = currDist*currDist;
         long double distance = powRad - (xRes + yRes);
         if (distance > 0) {
             res++;
