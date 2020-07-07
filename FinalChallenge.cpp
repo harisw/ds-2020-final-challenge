@@ -47,6 +47,7 @@ void insertPoint(vector<string>& inp)
 void deletePoint(vector<string>& inp)
 {
 	int i = stoi(inp[1]);
+	//b tree
 	tree.deletion(i);
 	return;
 }
@@ -57,7 +58,10 @@ void queryPoint(vector<string>& inp)
 	long int cent_y = stoi(inp[2]);
 	long int rad = stoi(inp[3]);
 	int farthest = 0;
+	//b tree
 	int result = tree.queryTraverse(cent_x, cent_y, rad, farthest);
+
+
 	if (!result)
 		outfile << "0" << endl;
 	else

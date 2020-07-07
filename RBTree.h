@@ -46,7 +46,7 @@ private:
         }
     }
 
-    void queryinOrderHelper(NodePtr node, int &res, int &farthest, long double &farthestDist) {
+    void queryinOrderHelper(NodePtr node, int& res, int& farthest, long double& farthestDist) {
         if (node != TNULL) {
             queryinOrderHelper(node->left, res, farthest, farthestDist);
             long double xRes = pow(currX - node->x, 2);
@@ -63,7 +63,7 @@ private:
             }
             //else if(distance < 0)
                 //cout << node->data << "OUTSIDE" << endl;
-            else if(distance == 0){
+            else if (distance == 0) {
                 //cout << node->data << "ON THE LINE" << endl;
                 res++;
                 if (distance < farthestDist) {
@@ -324,7 +324,7 @@ public:
         inOrderHelper(this->root);
     }
 
-    int queryinorder(int centerX, int centerY, int dist, int &farthest) {
+    int queryinorder(int centerX, int centerY, int dist, int& farthest) {
         int res = 0;
         long double farthestP = 9999999999999;
         currX = centerX; currY = centerY; currDist = dist;

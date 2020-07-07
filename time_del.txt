@@ -1,0 +1,9 @@
+3000. TIME AVG : 1 microseconds
+6000. TIME AVG : 1 microseconds
+9000. TIME AVG : 1 microseconds
+12000. TIME AVG : 1 microseconds
+15000. TIME AVG : 2 microseconds
+18000. TIME AVG : 2 microseconds
+21000. TIME AVG : 3 microseconds
+24000. TIME AVG : 2 microseconds
+27000. TIME AVG : 2 microseconds

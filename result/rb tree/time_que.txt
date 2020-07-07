@@ -1,0 +1,10 @@
+1400. TIME AVG : 2086 microseconds
+2800. TIME AVG : 5097 microseconds
+4200. TIME AVG : 10582 microseconds
+5600. TIME AVG : 13919 microseconds
+7000. TIME AVG : 17038 microseconds
+8400. TIME AVG : 20665 microseconds
+9800. TIME AVG : 24439 microseconds
+11200. TIME AVG : 27992 microseconds
+12600. TIME AVG : 31461 microseconds
+14000. TIME AVG : 34453 microseconds
