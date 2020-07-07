@@ -7,15 +7,15 @@
 #include <vector>
 #include <chrono>
 #include <array>
-#include "RBTree.h"
+#include "BTree.h"
 
 using namespace std;
 using namespace std::chrono;
 
 #define MAX_SIZE 1000002
 
-RBTree tree;
-//BTree tree(4);
+//RBTree tree;
+BTree tree(4);
 ofstream outfile;
 ofstream outInsertFile;
 ofstream outDeleteFile;
@@ -49,9 +49,9 @@ void deletePoint(vector<string>& inp)
 {
 	int i = stoi(inp[1]);
 	//rb tree
-	tree.deleteNode(i);
+	//tree.deleteNode(i);
 	//b tree
-	//tree.deletion(i);
+	tree.deletion(i);
 	return;
 }
 
@@ -62,9 +62,9 @@ void queryPoint(vector<string>& inp)
 	long double rad = stod(inp[3]);
 	int farthest = 0;
 	//rb tree
-	int result = tree.queryinorder(cent_x, cent_y, rad, farthest);
+	//int result = tree.queryinorder(cent_x, cent_y, rad, farthest);
 	//b tree
-	//int result = tree.queryTraverse(cent_x, cent_y, rad, farthest);
+	int result = tree.queryTraverse(cent_x, cent_y, rad, farthest);
 
 
 	if (!result)
@@ -77,9 +77,9 @@ void queryPoint(vector<string>& inp)
 void preparation()
 {
 	outfile.open("pout.txt");
-	outInsertFile.open("time_ins_rb.txt");
-	outDeleteFile.open("time_del_rb.txt");
-	outQueryFile.open("time_que_rb.txt");
+	outInsertFile.open("time_ins_order4.txt");
+	outDeleteFile.open("time_del_order4.txt");
+	outQueryFile.open("time_que_order4.txt");
 }
 void closing()
 {
@@ -126,7 +126,7 @@ int main()
 			stop = high_resolution_clock::now();
 			duration = duration_cast<microseconds>(stop - start).count();
 			delDur += duration;
-			if (delCount % 3000 == 0) {
+			if (delCount % 2000 == 0) {
 				outDeleteFile << delCount << ". TIME AVG : " << delDur / 3000 << " microseconds" << endl;
 				delDur = 0;
 			}
