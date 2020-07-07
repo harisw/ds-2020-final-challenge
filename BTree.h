@@ -4,10 +4,18 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#define LLINT long long int
+#define LLINT long int
+#define MAXFARTHEST 9999999999999
 using namespace std;
 
+struct Node {
+    int data;
+    LLINT x;
+    LLINT y;
+};
 class TreeNode {
+    Node* nodes[6];
     int* keys;
     int t;
     TreeNode** C;
@@ -17,7 +25,7 @@ class TreeNode {
 public:
     TreeNode(int temp, bool bool_leaf);
 
-    void insertNonFull(int k);
+    void insertNonFull(Node* node);
     void splitChild(int i, TreeNode* y);
     void traverse();
 
@@ -25,14 +33,14 @@ public:
     void deletion(int k);
     void removeFromLeaf(int idx);
     void removeFromNonLeaf(int idx);
-    int getPredecessor(int idx);
-    int getSuccessor(int idx);
+    Node* getPredecessor(int idx);
+    Node* getSuccessor(int idx);
     void fill(int idx);
     void borrowFromPrev(int idx);
     void borrowFromNext(int idx);
     void merge(int idx);
     TreeNode* search(int k);
-
+    void QueryTraverseHelper(int &res, int& farthest, long double &farthestDist, LLINT &currX, LLINT &currY, LLINT &currDist);
     friend class BTree;
 };
 
@@ -41,6 +49,14 @@ class BTree {
     int t;
 
 public:
+    int queryTraverse(LLINT centerX, LLINT centerY, LLINT dist, int& farthest) {
+        int res = 0;
+        long double farthestP = MAXFARTHEST;
+
+        root->QueryTraverseHelper(res, farthest, farthestP, centerX, centerY, dist);
+        return res;
+    }
+
     BTree(int temp) {
         root = NULL;
         t = temp;
@@ -55,8 +71,7 @@ public:
         return (root == NULL) ? NULL : root->search(k);
     }
 
-    void insert(int k);
-    //void insertion(int k);
+    void insert(int k, LLINT x, LLINT y);
 
     void deletion(int k);
 };
@@ -64,11 +79,38 @@ public:
 TreeNode::TreeNode(int t1, bool leaf1) {
     t = t1;
     leaf = leaf1;
-
-    keys = new int[2 * t - 1];
     C = new TreeNode * [2 * t];
 
     n = 0;
+}
+
+void TreeNode::QueryTraverseHelper(int &res, int &farthest, long double &farthestDist, LLINT &currX, LLINT &currY, LLINT &currDist) {
+    int i;
+    for (i = 0; i < n; i++) {
+        if (leaf == false)
+            C[i]->QueryTraverseHelper(res, farthest, farthestDist, currX, currY, currDist);
+        long double xRes = pow(currX - nodes[i]->x, 2);
+        long double yRes = pow(currY - nodes[i]->y, 2);
+        long double powRad = pow(currDist, 2);
+        long double distance = powRad - (xRes + yRes);
+        if (distance > 0) {
+            res++;
+            if (distance < farthestDist) {
+                farthestDist = distance;
+                farthest = nodes[i]->data;
+            }
+        }
+        else if (distance == 0) {
+            res++;
+            if (distance < farthestDist) {
+                farthestDist = distance;
+                farthest = nodes[i]->data;
+            }
+        }
+    }
+
+    if (leaf == false)
+        C[i]->QueryTraverseHelper(res, farthest, farthestDist, currX, currY, currDist);
 }
 
 void TreeNode::traverse() {
@@ -76,7 +118,8 @@ void TreeNode::traverse() {
     for (i = 0; i < n; i++) {
         if (leaf == false)
             C[i]->traverse();
-        cout << " " << keys[i];
+
+        cout << nodes[i]->data << " : (" << nodes[i]->x << " , " << nodes[i]->y << ")"<< endl;
     }
 
     if (leaf == false)
@@ -85,10 +128,10 @@ void TreeNode::traverse() {
 
 TreeNode* TreeNode::search(int k) {
     int i = 0;
-    while (i < n && k > keys[i])
+    while (i < n && k > nodes[i]->data)
         i++;
 
-    if (keys[i] == k)
+    if (nodes[i]->data == k)
         return this;
 
     if (leaf == true)
@@ -97,10 +140,13 @@ TreeNode* TreeNode::search(int k) {
     return C[i]->search(k);
 }
 
-void BTree::insert(int k) {
+void BTree::insert(int k, LLINT x, LLINT y) {
+    Node* newNode = new Node; newNode->data = k;  newNode->x = x; newNode->y = y;
+
     if (root == NULL) {
         root = new TreeNode(t, true);
-        root->keys[0] = k;
+
+        root->nodes[0] = newNode;
         root->n = 1;
     }
     else {
@@ -112,40 +158,40 @@ void BTree::insert(int k) {
             s->splitChild(0, root);
 
             int i = 0;
-            if (s->keys[0] < k)
+            if (s->nodes[0]->data < k)
                 i++;
-            s->C[i]->insertNonFull(k);
+            s->C[i]->insertNonFull(newNode);
 
             root = s;
         }
         else
-            root->insertNonFull(k);
+            root->insertNonFull(newNode);
     }
 }
 
-void TreeNode::insertNonFull(int k) {
+void TreeNode::insertNonFull(Node* newNode) {
     int i = n - 1;
 
     if (leaf == true) {
-        while (i >= 0 && keys[i] > k) {
-            keys[i + 1] = keys[i];
+        while (i >= 0 && nodes[i]->data > newNode->data) {
+            nodes[i + 1] = nodes[i];
             i--;
         }
 
-        keys[i + 1] = k;
+        nodes[i + 1] = newNode;
         n = n + 1;
     }
     else {
-        while (i >= 0 && keys[i] > k)
+        while (i >= 0 && nodes[i]->data > newNode->data)
             i--;
 
         if (C[i + 1]->n == 2 * t - 1) {
             splitChild(i + 1, C[i + 1]);
 
-            if (keys[i + 1] < k)
+            if (nodes[i + 1]->data < newNode->data)
                 i++;
         }
-        C[i + 1]->insertNonFull(k);
+        C[i + 1]->insertNonFull(newNode);
     }
 }
 
@@ -154,7 +200,7 @@ void TreeNode::splitChild(int i, TreeNode* y) {
     z->n = t - 1;
 
     for (int j = 0; j < t - 1; j++)
-        z->keys[j] = y->keys[j + t];
+        z->nodes[j] = y->nodes[j + t];
 
     if (y->leaf == false) {
         for (int j = 0; j < t; j++)
@@ -168,16 +214,16 @@ void TreeNode::splitChild(int i, TreeNode* y) {
     C[i + 1] = z;
 
     for (int j = n - 1; j >= i; j--)
-        keys[j + 1] = keys[j];
+        nodes[j + 1] = nodes[j];
 
-    keys[i] = y->keys[t - 1];
+    nodes[i] = y->nodes[t - 1];
     n = n + 1;
 }
 
 // Find the key
 int TreeNode::findKey(int k) {
     int idx = 0;
-    while (idx < n && keys[idx] < k)
+    while (idx < n && nodes[idx]->data < k)
         ++idx;
     return idx;
 }
@@ -186,7 +232,7 @@ int TreeNode::findKey(int k) {
 void TreeNode::deletion(int k) {
     int idx = findKey(k);
 
-    if (idx < n && keys[idx] == k) {
+    if (idx < n && nodes[idx]->data == k) {
         if (leaf)
             removeFromLeaf(idx);
         else
@@ -194,7 +240,7 @@ void TreeNode::deletion(int k) {
     }
     else {
         if (leaf) {
-            cout << "The key " << k << " is does not exist in the tree\n";
+            //cout << "The key " << k << " is does not exist in the tree\n";
             return;
         }
 
@@ -214,7 +260,7 @@ void TreeNode::deletion(int k) {
 // Remove from the leaf
 void TreeNode::removeFromLeaf(int idx) {
     for (int i = idx + 1; i < n; ++i)
-        keys[i - 1] = keys[i];
+        nodes[i - 1] = nodes[i];
 
     n--;
 
@@ -223,18 +269,18 @@ void TreeNode::removeFromLeaf(int idx) {
 
 // Delete from non leaf node
 void TreeNode::removeFromNonLeaf(int idx) {
-    int k = keys[idx];
+    int k = nodes[idx]->data;
 
     if (C[idx]->n >= t) {
-        int pred = getPredecessor(idx);
-        keys[idx] = pred;
-        C[idx]->deletion(pred);
+        Node* pred = getPredecessor(idx);
+        nodes[idx] = pred;
+        C[idx]->deletion(pred->data);
     }
 
     else if (C[idx + 1]->n >= t) {
-        int succ = getSuccessor(idx);
-        keys[idx] = succ;
-        C[idx + 1]->deletion(succ);
+        Node* succ = getSuccessor(idx);
+        nodes[idx] = succ;
+        C[idx + 1]->deletion(succ->data);
     }
 
     else {
@@ -244,20 +290,20 @@ void TreeNode::removeFromNonLeaf(int idx) {
     return;
 }
 
-int TreeNode::getPredecessor(int idx) {
+Node* TreeNode::getPredecessor(int idx) {
     TreeNode* cur = C[idx];
     while (!cur->leaf)
         cur = cur->C[cur->n];
 
-    return cur->keys[cur->n - 1];
+    return cur->nodes[cur->n - 1];
 }
 
-int TreeNode::getSuccessor(int idx) {
+Node* TreeNode::getSuccessor(int idx) {
     TreeNode* cur = C[idx + 1];
     while (!cur->leaf)
         cur = cur->C[0];
 
-    return cur->keys[0];
+    return cur->nodes[0];
 }
 
 void TreeNode::fill(int idx) {
@@ -282,19 +328,19 @@ void TreeNode::borrowFromPrev(int idx) {
     TreeNode* sibling = C[idx - 1];
 
     for (int i = child->n - 1; i >= 0; --i)
-        child->keys[i + 1] = child->keys[i];
+        child->nodes[i + 1] = child->nodes[i];
 
     if (!child->leaf) {
         for (int i = child->n; i >= 0; --i)
             child->C[i + 1] = child->C[i];
     }
 
-    child->keys[0] = keys[idx - 1];
+    child->nodes[0] = nodes[idx - 1];
 
     if (!child->leaf)
         child->C[0] = sibling->C[sibling->n];
 
-    keys[idx - 1] = sibling->keys[sibling->n - 1];
+    nodes[idx - 1] = sibling->nodes[sibling->n - 1];
 
     child->n += 1;
     sibling->n -= 1;
@@ -307,15 +353,15 @@ void TreeNode::borrowFromNext(int idx) {
     TreeNode* child = C[idx];
     TreeNode* sibling = C[idx + 1];
 
-    child->keys[(child->n)] = keys[idx];
+    child->nodes[(child->n)] = nodes[idx];
 
     if (!(child->leaf))
         child->C[(child->n) + 1] = sibling->C[0];
 
-    keys[idx] = sibling->keys[0];
+    nodes[idx] = sibling->nodes[0];
 
     for (int i = 1; i < sibling->n; ++i)
-        sibling->keys[i - 1] = sibling->keys[i];
+        sibling->nodes[i - 1] = sibling->nodes[i];
 
     if (!sibling->leaf) {
         for (int i = 1; i <= sibling->n; ++i)
@@ -333,10 +379,10 @@ void TreeNode::merge(int idx) {
     TreeNode* child = C[idx];
     TreeNode* sibling = C[idx + 1];
 
-    child->keys[t - 1] = keys[idx];
+    child->nodes[t - 1] = nodes[idx];
 
     for (int i = 0; i < sibling->n; ++i)
-        child->keys[i + t] = sibling->keys[i];
+        child->nodes[i + t] = sibling->nodes[i];
 
     if (!child->leaf) {
         for (int i = 0; i <= sibling->n; ++i)
@@ -344,7 +390,7 @@ void TreeNode::merge(int idx) {
     }
 
     for (int i = idx + 1; i < n; ++i)
-        keys[i - 1] = keys[i];
+        nodes[i - 1] = nodes[i];
 
     for (int i = idx + 2; i <= n; ++i)
         C[i - 1] = C[i];
